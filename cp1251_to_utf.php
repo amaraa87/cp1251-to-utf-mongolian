@@ -1,63 +1,61 @@
-<?php 
+<?php
 /*
-=== cp1251 to utf8 Mongolian cryllic ===
+=== CP1251 to UTF-8 Mongolian Cyrillic ===
 
-Contributors: Amarsanaa J
-Plugin Name: cp1251 to utf8 Mongolian cryllic
-Plugin URI: webipress.com
-Tags: wp, php, utf-8, converter, cp1251, mongolian , cryllic
-Author URI: http://webipress.com
-Author: WebiPress
+Contributors: Amara
+Plugin Name: CP1251 to UTF-8 Mongolian Cyrillic
+Description: Converts Mongolian Cyrillic text from CP1251 to UTF-8.
+Tags: wp, php, utf-8, converter, cp1251, mongolian, cryllic
+License: GPL-2.0+
+Text Domain: cp1251-to-utf8-mongolian
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.0
-Version: 1.0 
-
+Stable tag: 1.1
+Version: 1.1
 */
-function cp1251_utf8($word)
+
+function convert_cp1251_to_utf8($word)
 {
-$cyr_lower_chars = array(
-'е','щ','ф','ц','у','ж','э',
-'н','г','ш','ү','з','к','ъ',
-'й','ы','б','ө','а','х','р',
-'о','л','д','п','я','ч','ё',
-'с','м','и','т','ь','в','ю',);
+    $cyrillic_mapping = array(
+        'å' => 'е', 'ù' => 'щ', 'ô' => 'ф', 'ö' => 'ц', 'ó' => 'у', 'æ' => 'ж', 'ý' => 'э',
+        'í' => 'н', 'ã' => 'г', 'ø' => 'ш', '¿' => 'ү', 'ç' => 'з', 'ê' => 'к', 'ú' => 'ъ',
+        'é' => 'й', 'û' => 'ы', 'á' => 'б', 'º' => 'ө', 'à' => 'а', 'õ' => 'х', 'ð' => 'р',
+        'î' => 'о', 'ë' => 'л', 'ä' => 'д', 'ï' => 'п', 'ÿ' => 'я', '÷' => 'ч', '¸' => 'ё',
+        'ñ' => 'с', 'ì' => 'м', 'è' => 'и', 'ò' => 'т', 'ü' => 'ь', 'â' => 'в', 'þ' => 'ю',
+        'Å' => 'Е', 'Ù' => 'Щ', 'Ô' => 'Ф', 'Ö' => 'Ц', 'Ó' => 'У', 'Æ' => 'Ж', 'Ý' => 'Э',
+        'Í' => 'Н', 'Ã' => 'Г', 'Ø' => 'Ш', '¯' => 'Ү', 'Ç' => 'З', 'Ê' => 'К', 'Ú' => 'Ъ',
+        'É' => 'Й', 'Û' => 'Ы', 'Á' => 'Б', 'ª' => 'Ө', 'À' => 'А', 'Õ' => 'Х', 'Ð' => 'Р',
+        'Î' => 'О', 'Ë' => 'Л', 'Ä' => 'Д', 'Ï' => 'П', 'ß' => 'Я', '×' => 'Ч', '¨' => 'Ё',
+        'Ñ' => 'С', 'Ì' => 'М', 'È' => 'И', 'Ò' => 'Т', 'Ü' => 'Ь', 'Â' => 'В', 'Þ' => 'Ю',
+    );
 
-$latin_lower_chars = array(
-'å','ù','ô','ö','ó','æ','ý',
-'í','ã','ø','¿','ç','ê','ú',
-'é','û','á','º','à','õ','ð',
-'î','ë','ä','ï','ÿ','÷','¸',
-'ñ','ì','è','ò','ü','â','þ',);
+    // Check if input is a string
+    if (!is_string($word)) {
+        return $word;
+    }
 
-$cyr_upper_chars = array(
-'Е','Щ','Ф','Ц','У','Ж','Э',
-'Н','Г','Ш','Ү','З','К','Ъ',
-'Й','Ы','Б','Ө','А','Х','Р',
-'О','Л','Д','П','Я','Ч','Ё',
-'С','М','И','Т','Ь','В','Ю',);
-
-$latin_upper_chars = array(
-'Å','Ù','Ô','Ö','Ó','Æ','Ý',
-'Í','Ã','Ø','¯','Ç','Ê','Ú',
-'É','Û','Á','ª','À','Õ','Ð',
-'Î','Ë','Ä','Ï','ß','×','¨',
-'Ñ','Ì','È','Ò','Ü','Â','Þ',);
-
-//replacing lower cyrillic
-$word = str_replace($latin_lower_chars, $cyr_lower_chars, $word);
-//replacing upper cyrillic
-$word = str_replace($latin_upper_chars, $cyr_upper_chars, $word);
-return $word;
+    // Perform character conversion
+    return strtr($word, $cyrillic_mapping);
 }
 
-function replacecontent($data) {
+function replace_content($data)
+{
     global $post_ID;
 
-    $data['post_content'] = cp1251_utf8($data['post_content']);
-	$data['post_excerpt'] = cp1251_utf8($data['post_excerpt']);
-	$data['post_title'] = cp1251_utf8($data['post_title']);
+    // Check if content, excerpt, or title is not empty before conversion
+    if (!empty($data['post_content'])) {
+        $data['post_content'] = convert_cp1251_to_utf8($data['post_content']);
+    }
+
+    if (!empty($data['post_excerpt'])) {
+        $data['post_excerpt'] = convert_cp1251_to_utf8($data['post_excerpt']);
+    }
+
+    if (!empty($data['post_title'])) {
+        $data['post_title'] = convert_cp1251_to_utf8($data['post_title']);
+    }
+
     return $data;
 }
 
-add_filter('wp_insert_post_data', 'replacecontent', 10);
+add_filter('wp_insert_post_data', 'replace_content', 10);
